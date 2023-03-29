@@ -1,0 +1,58 @@
+笔记本win10使用clash代理热点的两种方式
+
+一.手机设置热点代理
+笔记本正常开热点，clash运行并在首页打开Allow LAN允许局域网连接，打开命令行窗口，输入ipconfig命令查看热点网卡的ipv4地址，
+手机连接热点，设置热点的代理ip为刚刚的ipv4地址，端口为clash首页显示的端口。
+此时有些网站可以正常进入，但是有些没有网络，比如qq，这时需要修改clash的yaml配置文件，
+将dns模块的代码替换为
+dns:
+  enable: true
+  listen: 0.0.0.0:5353
+  ipv6: false # 当此选项为 false 时, AAAA 请求将返回空
+  default-nameserver:
+    - 1.2.4.8
+    - 119.29.29.29
+    - 223.5.5.5
+    - 8.8.8.8
+  enhanced-mode: fake-ip
+  nameserver:
+    - 119.29.29.29
+  fallback:
+    - 'tls://1.1.1.1:853'
+    - 'tls://dns.google:853'
+    - 'tcp://8.8.8.8'
+    - 'tcp://208.67.222.222:443'
+  fallback-filter:
+    geoip: true
+    ipcidr:
+     - 240.0.0.0/4
+     
+二.手机直接连接热点（推荐）
+笔记本先开热点，clash首页Service Mode->manage->install安装完成之后软件自动重启，可以在Service Mode右边看到绿色地球，再打开Allow LAN和TUN Mode。
+windows控制面板->网络和Internet->查看网络任务和状态->点击蓝色的文字Clash->属性->共享->勾选第一个框并且选择热点网卡。
+同样需要修改clash的yaml文件
+将dns模块的代码替换为
+dns:
+  enable: true
+  listen: 0.0.0.0:5353
+  ipv6: false # 当此选项为 false 时, AAAA 请求将返回空
+  default-nameserver:
+    - 1.2.4.8
+    - 119.29.29.29
+    - 223.5.5.5
+    - 8.8.8.8
+  enhanced-mode: fake-ip
+  nameserver:
+    - 119.29.29.29
+  fallback:
+    - 'tls://1.1.1.1:853'
+    - 'tls://dns.google:853'
+    - 'tcp://8.8.8.8'
+    - 'tcp://208.67.222.222:443'
+  fallback-filter:
+    geoip: true
+    ipcidr:
+     - 240.0.0.0/4
+     
+如果想还原设置，正常使用热点，需要点击
+windows控制面板->网络和Internet->查看网络任务和状态->更改适配器选项->禁用热点网卡，再重新开启热点即可。
